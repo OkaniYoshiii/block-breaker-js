@@ -1,5 +1,6 @@
 import * as Player from "./entities/player.js"
 import * as Block from "./entities/block.js"
+import * as Ball from "./entities/ball.js"
 import * as DirectionnalArrow from "./entities/directionnalArrow.js"
 import { radToDeg } from "./math.js"
 import { isHTMLCanvasElement } from "./type_guards.js"
@@ -7,12 +8,14 @@ import { isHTMLCanvasElement } from "./type_guards.js"
 /** @typedef { import('./entities/block.js').Block } Block */
 /** @typedef { import("./entities/player.js").Player } Player */
 /** @typedef { import("./entities/directionnalArrow.js").DirectionnalArrow } DirectionnalArrow */
+/** @typedef { import("./entities/ball.js").Ball } Ball */
 
 /**
  * @typedef { Object } GameObjects
  * @property { Block[] } blocks
  * @property { Player } player
  * @property { DirectionnalArrow } directionnalArrow
+ * @property { Ball } ball
  */
 
 const canvas = document.getElementById('game')
@@ -43,7 +46,7 @@ function main() {
         const x = directionnalArrow.origin.x - ev.x
         const y = directionnalArrow.origin.y - ev.y
         const angle = radToDeg(-Math.atan2(x, y))
-        console.log(angle)
+
         gameObjects.directionnalArrow.angle = angle
     })
 
@@ -101,10 +104,13 @@ function init(canvas, context) {
 
     const directionnalArrow = DirectionnalArrow.newDirectionnalArrow(player, 15, 5, player.radius + 10)
 
+    const ball = Ball.newBall(player.x, player.y, 5)
+
     return {
         blocks: blocks,
         player: player,
         directionnalArrow: directionnalArrow,
+        ball: ball,
     }
 }
 
@@ -123,6 +129,8 @@ function update(canvas, context, gameObjects) {
     Player.draw(gameObjects.player, context)
 
     DirectionnalArrow.draw(gameObjects.directionnalArrow, context)
+
+    Ball.draw(gameObjects.ball, context)
 }
 
 function render() {
