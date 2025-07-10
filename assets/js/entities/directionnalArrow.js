@@ -40,7 +40,6 @@ export function draw(arrow, context) {
     context.beginPath()
     context.fillStyle = 'red'
 
-    arrow.angle = 0
     for(let i = 0; i < arrow.segments; i++) {
         const angle = Math.PI / 180 * (arrow.angle - 90)
         const dist = (arrow.gap + arrow.length / 2) + i * (arrow.length + arrow.segmentsGap)
