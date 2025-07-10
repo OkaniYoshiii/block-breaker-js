@@ -3,6 +3,8 @@
  * @property { number } x
  * @property { number } y
  * @property { number } radius
+ * @property { number } dirX
+ * @property { number } dirY
  */
 
 /**
@@ -16,6 +18,9 @@ export function newBall(x, y, radius) {
         x: x,
         y: y,
         radius: radius,
+
+        dirX: 0,
+        dirY: 0,
     }
 }
 

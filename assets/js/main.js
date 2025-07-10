@@ -1,14 +1,17 @@
 import * as Ball from "./entities/ball.js"
 import * as Block from "./entities/block.js"
+import * as DirectionnalArrow from "./entities/directionnalArrow.js"
 import { isHTMLCanvasElement } from "./type_guards.js"
 
 /** @typedef { import('./entities/block.js').Block } Block */
 /** @typedef { import("./entities/ball.js").Ball } Ball */
+/** @typedef { import("./entities/directionnalArrow.js").DirectionnalArrow } DirectionnalArrow */
 
 /**
  * @typedef { Object } GameObjects
  * @property { Block[] } blocks
  * @property { Ball } ball
+ * @property { DirectionnalArrow } directionnalArrow
  */
 
 const canvas = document.getElementById('game')
@@ -33,6 +36,14 @@ function main() {
     // window.addEventListener('resize', () => resizeCanvas(canvas, container, aspectRatio))
 
     const gameObjects = init(canvas, context)
+
+    canvas.addEventListener('mousemove', function(ev) {
+        // const directionnalArrow = gameObjects.directionnalArrow
+        // const x = directionnalArrow.origin.x - ev.x
+        // const y = directionnalArrow.origin.y - ev.y
+        // const angle = Math.atan2(x, y)
+        // gameObjects.directionnalArrow.angle = angle
+    })
 
     let lastFrameTime = 0
     const maxFPS = 30
@@ -86,9 +97,12 @@ function init(canvas, context) {
     const y = canvas.height - radius
     const ball = Ball.newBall(x, y, radius)
 
+    const directionnalArrow = DirectionnalArrow.newDirectionnalArrow(ball, 15, 5, ball.radius + 10)
+
     return {
         blocks: blocks,
         ball: ball,
+        directionnalArrow: directionnalArrow,
     }
 }
 
@@ -105,6 +119,8 @@ function update(canvas, context, gameObjects) {
     }
 
     Ball.draw(gameObjects.ball, context)
+
+    DirectionnalArrow.draw(gameObjects.directionnalArrow, context)
 }
 
 function render() {
