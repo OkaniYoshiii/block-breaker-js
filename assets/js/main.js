@@ -1,6 +1,7 @@
 import * as Ball from "./entities/ball.js"
 import * as Block from "./entities/block.js"
 import * as DirectionnalArrow from "./entities/directionnalArrow.js"
+import { radToDeg } from "./math.js"
 import { isHTMLCanvasElement } from "./type_guards.js"
 
 /** @typedef { import('./entities/block.js').Block } Block */
@@ -38,11 +39,12 @@ function main() {
     const gameObjects = init(canvas, context)
 
     canvas.addEventListener('mousemove', function(ev) {
-        // const directionnalArrow = gameObjects.directionnalArrow
-        // const x = directionnalArrow.origin.x - ev.x
-        // const y = directionnalArrow.origin.y - ev.y
-        // const angle = Math.atan2(x, y)
-        // gameObjects.directionnalArrow.angle = angle
+        const directionnalArrow = gameObjects.directionnalArrow
+        const x = directionnalArrow.origin.x - ev.x
+        const y = directionnalArrow.origin.y - ev.y
+        const angle = radToDeg(-Math.atan2(x, y))
+        console.log(angle)
+        gameObjects.directionnalArrow.angle = angle
     })
 
     let lastFrameTime = 0
