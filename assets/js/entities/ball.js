@@ -38,3 +38,11 @@ export function draw(ball, context) {
 
     context.fillStyle = fillStyle
 }
+
+/**
+ * @param { Ball } ball 
+ */
+export function update(ball) {
+    ball.x += ball.dirX
+    ball.y += ball.dirY
+} 

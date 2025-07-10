@@ -50,6 +50,37 @@ function main() {
         gameObjects.directionnalArrow.angle = angle
     })
 
+    canvas.addEventListener('click', function onCanvasClick(ev) {
+        const maxSpeed = 5
+
+        const x = gameObjects.player.x - ev.x
+        const y = gameObjects.player.y - ev.y
+        const angle = radToDeg(-Math.atan2(x, y))
+
+        const widdestAngle = 90
+
+        const absAngle = Math.abs(angle)
+
+        if(absAngle > 90) {
+            // Indicate to player that this action is not possible
+            return
+        }
+
+        const ratio = absAngle / widdestAngle
+
+        let dirX = maxSpeed * ratio
+        let dirY = maxSpeed * (1 - ratio) * (-1)
+
+        if(angle < 0) {
+            dirX *= -1
+        }
+
+        gameObjects.ball.dirX = dirX
+        gameObjects.ball.dirY = dirY
+
+        canvas.removeEventListener('click', onCanvasClick)
+    })
+
     let lastFrameTime = 0
     const maxFPS = 30
     const timestep = 1000 / maxFPS
@@ -59,8 +90,8 @@ function main() {
         if (timestamp - lastFrameTime >= timestep) {
             lastFrameTime = timestamp
 
-            update(canvas, context, gameObjects)
-            render()
+            update(gameObjects)
+            render(canvas, context, gameObjects)
         }
 
         requestAnimationFrame(gameLoop)
@@ -115,11 +146,18 @@ function init(canvas, context) {
 }
 
 /**
+ * @param { GameObjects } gameObjects
+ */
+function update(gameObjects) {
+    Ball.update(gameObjects.ball)
+}
+
+/**
  * @param { HTMLCanvasElement } canvas 
  * @param { CanvasRenderingContext2D } context
  * @param { GameObjects } gameObjects
  */
-function update(canvas, context, gameObjects) {
+function render(canvas, context, gameObjects) {
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     for(const block of gameObjects.blocks) {
@@ -131,9 +169,7 @@ function update(canvas, context, gameObjects) {
     DirectionnalArrow.draw(gameObjects.directionnalArrow, context)
 
     Ball.draw(gameObjects.ball, context)
-}
 
-function render() {
 }
 
 
