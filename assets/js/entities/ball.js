@@ -1,3 +1,5 @@
+import * as Collisions from "../collisions.js"
+
 /**
  * @typedef { Object } Ball
  * @property { number } x
@@ -40,9 +42,30 @@ export function draw(ball, context) {
 }
 
 /**
- * @param { Ball } ball 
+ * @param { import("../main").GameObjects } gameObjects
+ * @param { HTMLCanvasElement } canvas
  */
-export function update(ball) {
-    ball.x += ball.dirX
-    ball.y += ball.dirY
+export function update(gameObjects, canvas) {
+    // Anticipate collision
+    gameObjects.ball.x += gameObjects.ball.dirX
+    gameObjects.ball.y += gameObjects.ball.dirY
+    const collisionEdge = Collisions.circleOutsideOfCanvas(gameObjects.ball, canvas)
+
+    // Reset position
+    gameObjects.ball.x -= gameObjects.ball.dirX
+    gameObjects.ball.y -= gameObjects.ball.dirY
+
+    switch(collisionEdge) {
+        case Collisions.EDGES.LEFT:
+        case Collisions.EDGES.RIGHT:
+            gameObjects.ball.dirX *= -1
+            break;
+        case Collisions.EDGES.TOP:
+        case Collisions.EDGES.BOTTOM:
+            gameObjects.ball.dirY *= -1
+            break;
+    }
+
+    gameObjects.ball.x += gameObjects.ball.dirX
+    gameObjects.ball.y += gameObjects.ball.dirY
 } 

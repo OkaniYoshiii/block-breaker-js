@@ -4,6 +4,7 @@ import * as Ball from "./entities/ball.js"
 import * as DirectionnalArrow from "./entities/directionnalArrow.js"
 import { radToDeg } from "./math.js"
 import { isHTMLCanvasElement } from "./type_guards.js"
+import { circleOutsideOfCanvas } from "./collisions.js"
 
 /** @typedef { import('./entities/block.js').Block } Block */
 /** @typedef { import("./entities/player.js").Player } Player */
@@ -43,18 +44,22 @@ function main() {
 
     canvas.addEventListener('mousemove', function(ev) {
         const directionnalArrow = gameObjects.directionnalArrow
-        const x = directionnalArrow.origin.x - ev.x
-        const y = directionnalArrow.origin.y - ev.y
+        const x = directionnalArrow.origin.x - ev.offsetX
+        const y = directionnalArrow.origin.y - ev.offsetY
         const angle = radToDeg(-Math.atan2(x, y))
 
         gameObjects.directionnalArrow.angle = angle
+
+        // Debug
+        // gameObjects.ball.x = ev.offsetX
+        // gameObjects.ball.y = ev.offsetY
     })
 
     canvas.addEventListener('click', function onCanvasClick(ev) {
         const maxSpeed = 5
 
-        const x = gameObjects.player.x - ev.x
-        const y = gameObjects.player.y - ev.y
+        const x = gameObjects.player.x - ev.offsetX
+        const y = gameObjects.player.y - ev.offsetY
         const angle = radToDeg(-Math.atan2(x, y))
 
         const widdestAngle = 90
@@ -90,7 +95,7 @@ function main() {
         if (timestamp - lastFrameTime >= timestep) {
             lastFrameTime = timestamp
 
-            update(gameObjects)
+            update(canvas, gameObjects)
             render(canvas, context, gameObjects)
         }
 
@@ -146,10 +151,11 @@ function init(canvas, context) {
 }
 
 /**
+ * @param { HTMLCanvasElement } canvas
  * @param { GameObjects } gameObjects
  */
-function update(gameObjects) {
-    Ball.update(gameObjects.ball)
+function update(canvas, gameObjects) {
+    Ball.update(gameObjects, canvas)
 }
 
 /**
@@ -169,7 +175,6 @@ function render(canvas, context, gameObjects) {
     DirectionnalArrow.draw(gameObjects.directionnalArrow, context)
 
     Ball.draw(gameObjects.ball, context)
-
 }
 
 
