@@ -1,5 +1,5 @@
 /**
- * @typedef { Object } Ball
+ * @typedef { Object } Player
  * @property { number } x
  * @property { number } y
  * @property { number } radius
@@ -13,7 +13,7 @@
  * @param { number } radius 
  * @returns 
  */
-export function newBall(x, y, radius) {
+export function newPlayer(x, y, radius) {
     return {
         x: x,
         y: y,
@@ -25,11 +25,11 @@ export function newBall(x, y, radius) {
 }
 
 /**
- * @param { Ball } ball 
+ * @param { Player } player 
  * @param { CanvasRenderingContext2D } context 
  */
-export function draw(ball, context) {
+export function draw(player, context) {
     context.beginPath()
-    context.ellipse(ball.x, ball.y, ball.radius, ball.radius, 0, 0, 360)
+    context.ellipse(player.x, player.y, player.radius, player.radius, 0, 0, 360)
     context.fill()
 }
