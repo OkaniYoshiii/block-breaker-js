@@ -1,10 +1,14 @@
+import * as Ball from "./entities/ball.js"
 import * as Block from "./entities/block.js"
 import { isHTMLCanvasElement } from "./type_guards.js"
 
 /** @typedef { import('./entities/block.js').Block } Block */
+/** @typedef { import("./entities/ball.js").Ball } Ball */
+
 /**
  * @typedef { Object } GameObjects
  * @property { Block[] } blocks
+ * @property { Ball } ball
  */
 
 const canvas = document.getElementById('game')
@@ -77,8 +81,14 @@ function init(canvas, context) {
         }
     }
 
+    const radius = 10
+    const x = canvas.width / 2
+    const y = canvas.height - radius
+    const ball = Ball.newBall(x, y, radius)
+
     return {
         blocks: blocks,
+        ball: ball,
     }
 }
 
@@ -93,6 +103,8 @@ function update(canvas, context, gameObjects) {
     for(const block of gameObjects.blocks) {
         Block.draw(block, context)
     }
+
+    Ball.draw(gameObjects.ball, context)
 }
 
 function render() {
