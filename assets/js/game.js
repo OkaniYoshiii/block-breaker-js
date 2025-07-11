@@ -18,16 +18,33 @@ import { radToDeg } from "./math.js"
  * @property { Ball } ball
  */
 
+/**
+ * @typedef { Object } UninitializedGame
+ * @property { false } isInitialized
+ * @property { {} } objects
+ */
+
+/**
+ * @typedef { Object } InitializedGame
+ * @property { true } isInitialized
+ * @property { GameObjects } objects
+ */
+
 const controls = {
     leftPressed: false,
     rightPressed: false,
 }
 
+/** @type { UninitializedGame | InitializedGame } */
+const game = {
+    isInitialized: false,
+    objects: {},
+}
+
 /**
  * @param { HTMLCanvasElement } canvas
- * @param { CanvasRenderingContext2D } context
  */
-export function init(canvas, context) {
+export function init(canvas) {
     const aspectRatio = 9 / 16
 
     canvas.width = 500
@@ -73,48 +90,57 @@ export function init(canvas, context) {
 
     const ball = Ball.newBall(player.x + player.width / 2, player.y, 5)
 
-    return {
+    const objects = {
         blocks: blocks,
         player: player,
         directionnalArrow: directionnalArrow,
         ball: ball,
     }
+
+    game.isInitialized = true
+    game.objects = objects
 }
 
 /**
  * @param { HTMLCanvasElement } canvas
- * @param { GameObjects } gameObjects
  */
-export function update(canvas, gameObjects) {
+export function update(canvas) {
+    if(!game.isInitialized) {
+        return
+    }
+
     if(controls.leftPressed) {
-        Player.moveLeft(gameObjects.player)
+        Player.moveLeft(game.objects.player)
     }
 
     if(controls.rightPressed) {
-        Player.moveRight(gameObjects.player)
+        Player.moveRight(game.objects.player)
     }
 
-    Ball.update(gameObjects, canvas)
-    Player.update(gameObjects.player)
+    Ball.update(game.objects, canvas)
+    Player.update(game.objects.player)
 }
 
 /**
  * @param { HTMLCanvasElement } canvas 
  * @param { CanvasRenderingContext2D } context
- * @param { GameObjects } gameObjects
  */
-export function render(canvas, context, gameObjects) {
+export function render(canvas, context) {
+    if(!game.isInitialized) {
+        return
+    }
+
     context.clearRect(0, 0, canvas.width, canvas.height)
 
-    for(const block of gameObjects.blocks) {
+    for(const block of game.objects.blocks) {
         Block.draw(block, context)
     }
 
-    Player.draw(gameObjects.player, context)
+    Player.draw(game.objects.player, context)
 
-    DirectionnalArrow.draw(gameObjects.directionnalArrow, context)
+    DirectionnalArrow.draw(game.objects.directionnalArrow, context)
 
-    Ball.draw(gameObjects.ball, context)
+    Ball.draw(game.objects.ball, context)
 }
 
 /**
@@ -158,19 +184,17 @@ export function onKeyUp(ev) {
 
 /**
  * @param { Event } ev 
- * @param { GameObjects } gameObjects 
- * @param { AbortController } abortController
  */
-export function onCanvasClick(ev, gameObjects, abortController) {
+export function onCanvasClick(ev) {
     const currentTarget = ev.currentTarget 
-    if(!isMouseEvent(ev) || !isHTMLCanvasElement(currentTarget)) {
+    if(!isMouseEvent(ev) || !isHTMLCanvasElement(currentTarget) || !game.isInitialized) {
         return
     }
 
     const maxSpeed = 5
 
-    const dx = ev.offsetX - gameObjects.ball.x
-    const dy = ev.offsetY - gameObjects.ball.y
+    const dx = ev.offsetX - game.objects.ball.x
+    const dy = ev.offsetY - game.objects.ball.y
 
     const angle = Math.atan2(dy, dx)
 
@@ -183,25 +207,24 @@ export function onCanvasClick(ev, gameObjects, abortController) {
     const normX = dx / length
     const normY = dy / length
 
-    gameObjects.ball.dirX = normX * maxSpeed
-    gameObjects.ball.dirY = normY * maxSpeed
+    game.objects.ball.dirX = normX * maxSpeed
+    game.objects.ball.dirY = normY * maxSpeed
 
-    abortController.abort()
+    currentTarget.removeEventListener('click', onCanvasClick)
 }
 
 /**
  * @param { Event } ev 
- * @param { GameObjects } gameObjects 
  */
-export function onCanvasMouseMove(ev, gameObjects) {
-    if(!isMouseEvent(ev)) {
+export function onCanvasMouseMove(ev) {
+    if(!isMouseEvent(ev) || !game.isInitialized) {
         return
     }
 
-    const directionnalArrow = gameObjects.directionnalArrow
+    const directionnalArrow = game.objects.directionnalArrow
     const x = directionnalArrow.origin.x - ev.offsetX
     const y = directionnalArrow.origin.y - ev.offsetY
     const angle = radToDeg(-Math.atan2(x, y))
 
-    gameObjects.directionnalArrow.angle = angle
+    game.objects.directionnalArrow.angle = angle
 }

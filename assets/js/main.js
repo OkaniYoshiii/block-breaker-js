@@ -23,16 +23,10 @@ function main() {
     // Remove all things from canvas, do't knwo why
     // window.addEventListener('resize', () => resizeCanvas(canvas, container, aspectRatio))
 
-    const gameObjects = Game.init(canvas, context)
+    Game.init(canvas)
 
-    canvas.addEventListener('mousemove', function(ev) {
-        Game.onCanvasMouseMove(ev, gameObjects)
-    })
-
-    const clickController = new AbortController()
-    canvas.addEventListener('click', (ev) => {
-        Game.onCanvasClick(ev, gameObjects, clickController)
-    }, { signal: clickController.signal })
+    canvas.addEventListener('mousemove', Game.onCanvasMouseMove)
+    canvas.addEventListener('click', Game.onCanvasClick)
 
     window.addEventListener('keyup', Game.onKeyUp)
     window.addEventListener('keydown', Game.onKeyDown)
@@ -46,8 +40,8 @@ function main() {
         if (timestamp - lastFrameTime >= timestep) {
             lastFrameTime = timestamp
 
-            Game.update(canvas, gameObjects)
-            Game.render(canvas, context, gameObjects)
+            Game.update(canvas)
+            Game.render(canvas, context)
         }
 
         requestAnimationFrame(gameLoop)
