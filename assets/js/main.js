@@ -4,7 +4,6 @@ import * as Ball from "./entities/ball.js"
 import * as DirectionnalArrow from "./entities/directionnalArrow.js"
 import { radToDeg } from "./math.js"
 import { isHTMLCanvasElement } from "./type_guards.js"
-import { circleOutsideOfCanvas } from "./collisions.js"
 
 /** @typedef { import('./entities/block.js').Block } Block */
 /** @typedef { import("./entities/player.js").Player } Player */
@@ -56,33 +55,24 @@ function main() {
     })
 
     canvas.addEventListener('click', function onCanvasClick(ev) {
-        const maxSpeed = 5
+        const maxSpeed = 5;
 
-        const x = gameObjects.player.x - ev.offsetX
-        const y = gameObjects.player.y - ev.offsetY
-        const angle = radToDeg(-Math.atan2(x, y))
+        const dx = ev.offsetX - gameObjects.ball.x;
+        const dy = ev.offsetY - gameObjects.ball.y;
 
-        const widdestAngle = 90
+        const angle = Math.atan2(dy, dx);
 
-        const absAngle = Math.abs(angle)
-
-        if(absAngle > 90) {
-            // Indicate to player that this action is not possible
-            return
+        const angleDeg = angle * (180 / Math.PI);
+        if (angleDeg < -90 || angleDeg > 90) {
+            return;
         }
 
-        const ratio = absAngle / widdestAngle
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const normX = dx / length;
+        const normY = dy / length;
 
-        let dirX = maxSpeed * ratio
-        let dirY = maxSpeed * (1 - ratio) * (-1)
-
-        if(angle < 0) {
-            dirX *= -1
-        }
-
-        gameObjects.ball.dirX = dirX
-        gameObjects.ball.dirY = dirY
-
+        gameObjects.ball.dirX = normX * maxSpeed;
+        gameObjects.ball.dirY = normY * maxSpeed;
         canvas.removeEventListener('click', onCanvasClick)
     })
 
@@ -117,30 +107,45 @@ function init(canvas, context) {
     canvas.width = 500
     canvas.height = canvas.width * aspectRatio
 
-    const blocksPerRow = 10
-    const blocksPerColumn = 5
-    const gap = 5
-    const width = canvas.width / blocksPerRow - ((blocksPerRow - 1) * gap / blocksPerRow)
-    const height = 100 / blocksPerColumn - ((blocksPerColumn - 1) * gap / blocksPerColumn)
+    const blocks = function() {
+        const blocksPerRow = 10
+        const blocksPerColumn = 5
+        const gap = 5
+        const width = canvas.width / blocksPerRow - ((blocksPerRow - 1) * gap / blocksPerRow)
+        const height = 100 / blocksPerColumn - ((blocksPerColumn - 1) * gap / blocksPerColumn)
 
-    /** @type { Block[] } */
-    const blocks = []
-    for(let i = 0; i < blocksPerRow; i++) {
-        for(let j = 0; j < blocksPerColumn; j++) {
-            const block = Block.newBlock(i * width + gap * i, j * height + gap * j, width, height)
+        /** @type { Block[] } */
+        const blocks = []
+        for(let i = 0; i < blocksPerRow; i++) {
+            for(let j = 0; j < blocksPerColumn; j++) {
+                const block = Block.newBlock(i * width + gap * i, j * height + gap * j, width, height)
 
-            blocks.push(block)
+                blocks.push(block)
+            }
         }
-    }
 
-    const radius = 10
-    const x = canvas.width / 2
-    const y = canvas.height - radius
-    const player = Player.newPlayer(x, y, radius)
+        return blocks
+    }()
 
-    const directionnalArrow = DirectionnalArrow.newDirectionnalArrow(player, 15, 5, player.radius + 10)
+    const player = function() {
+        const height = 10
+        const width = 50
+        const x = canvas.width / 2 - width / 2
+        const y = canvas.height - height
 
-    const ball = Ball.newBall(player.x, player.y, 5)
+        return Player.newPlayer(x, y, 50, height)
+    }()
+
+    const directionnalArrow = function() {
+        const origin = {
+            x: player.x + player.width / 2,
+            y: player.y,
+        }
+
+        return DirectionnalArrow.newDirectionnalArrow(origin, 15, 5, player.height)
+    }()
+
+    const ball = Ball.newBall(player.x + player.width / 2, player.y, 5)
 
     return {
         blocks: blocks,

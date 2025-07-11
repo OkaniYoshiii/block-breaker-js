@@ -2,7 +2,8 @@
  * @typedef { Object } Player
  * @property { number } x
  * @property { number } y
- * @property { number } radius
+ * @property { number } width
+ * @property { number } height
  * @property { number } dirX
  * @property { number } dirY
  */
@@ -10,14 +11,16 @@
 /**
  * @param { number } x 
  * @param { number } y 
- * @param { number } radius 
- * @returns 
+ * @param { number } width
+ * @param { number } height 
+ * @returns { Player }
  */
-export function newPlayer(x, y, radius) {
+export function newPlayer(x, y, width, height) {
     return {
         x: x,
         y: y,
-        radius: radius,
+        width: width,
+        height: height,
 
         dirX: 0,
         dirY: 0,
@@ -30,6 +33,6 @@ export function newPlayer(x, y, radius) {
  */
 export function draw(player, context) {
     context.beginPath()
-    context.ellipse(player.x, player.y, player.radius, player.radius, 0, 0, 360)
+    context.fillRect(player.x, player.y, player.width, player.height)
     context.fill()
 }
