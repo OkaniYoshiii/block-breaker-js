@@ -5,6 +5,7 @@
  * @property { number } width
  * @property { number } height
  * @property { number } speed
+ * @property { boolean } isLocked
  * @property { number } dirX
  * @property { number } dirY
  */
@@ -27,6 +28,8 @@ export function newPlayer(x, y, width, height, speed) {
 
         dirX: 0,
         dirY: 0,
+
+        isLocked: false,
     }
 }
 
@@ -44,6 +47,10 @@ export function draw(player, context) {
  * @param { Player } player 
  */
 export function update(player) {
+    if(player.isLocked) {
+        return
+    }
+
     player.x += player.dirX
     player.y += player.dirY
 }
@@ -52,6 +59,10 @@ export function update(player) {
  * @param { Player } player 
  */
 export function moveLeft(player) {
+    if(player.isLocked) {
+        return
+    }
+
     player.x += player.speed * -1
 }
 
@@ -59,5 +70,9 @@ export function moveLeft(player) {
  * @param { Player } player 
  */
 export function moveRight(player) {
+    if(player.isLocked) {
+        return
+    }
+
     player.x += player.speed
 }

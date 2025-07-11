@@ -42,7 +42,7 @@ export function draw(ball, context) {
 }
 
 /**
- * @param { import("../main").GameObjects } gameObjects
+ * @param { import("../game.js").GameObjects } gameObjects
  * @param { HTMLCanvasElement } canvas
  */
 export function update(gameObjects, canvas) {

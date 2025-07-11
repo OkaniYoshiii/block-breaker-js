@@ -76,7 +76,10 @@ export function init(canvas) {
         const x = canvas.width / 2 - width / 2
         const y = canvas.height - height
 
-        return Player.newPlayer(x, y, 50, height, 10)
+        const player = Player.newPlayer(x, y, 50, height, 10)
+        player.isLocked = true
+
+        return player
     }()
 
     const directionnalArrow = function() {
@@ -209,6 +212,9 @@ export function onCanvasClick(ev) {
 
     game.objects.ball.dirX = normX * maxSpeed
     game.objects.ball.dirY = normY * maxSpeed
+
+    game.objects.player.isLocked = false
+    game.objects.directionnalArrow.state = DirectionnalArrow.STATE.HIDDEN
 
     currentTarget.removeEventListener('click', onCanvasClick)
 }

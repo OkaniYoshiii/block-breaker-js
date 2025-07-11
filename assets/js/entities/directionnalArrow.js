@@ -7,7 +7,14 @@
  * @property { number } angle
  * @property { number } segments
  * @property { number } segmentsGap
+ * @property { number } state
  */
+
+export const STATE = {
+    NONE: 1 >> 0,
+    HIDDEN: 1 >> 1,
+    LOCKED: 1 >> 2,
+}
 
 /**
  * @param { {x: number, y: number} } origin 
@@ -27,6 +34,8 @@ export function newDirectionnalArrow(origin, length, thickness, gap) {
         angle: 0,
         segments: 4,
         segmentsGap: 10,
+
+        state: STATE.NONE,
     }
 }
 
@@ -35,6 +44,10 @@ export function newDirectionnalArrow(origin, length, thickness, gap) {
  * @param { CanvasRenderingContext2D } context 
  */
 export function draw(arrow, context) {
+    if(arrow.state === STATE.HIDDEN) {
+        return
+    }
+
     const originalFill = context.fillStyle
 
     context.beginPath()
