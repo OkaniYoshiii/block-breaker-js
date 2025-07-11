@@ -4,6 +4,7 @@
  * @property { number } y
  * @property { number } width
  * @property { number } height
+ * @property { number } speed
  * @property { number } dirX
  * @property { number } dirY
  */
@@ -13,14 +14,16 @@
  * @param { number } y 
  * @param { number } width
  * @param { number } height 
+ * @param { number } speed
  * @returns { Player }
  */
-export function newPlayer(x, y, width, height) {
+export function newPlayer(x, y, width, height, speed) {
     return {
         x: x,
         y: y,
         width: width,
         height: height,
+        speed: speed,
 
         dirX: 0,
         dirY: 0,
@@ -35,4 +38,26 @@ export function draw(player, context) {
     context.beginPath()
     context.fillRect(player.x, player.y, player.width, player.height)
     context.fill()
+}
+
+/**
+ * @param { Player } player 
+ */
+export function update(player) {
+    player.x += player.dirX
+    player.y += player.dirY
+}
+
+/**
+ * @param { Player } player 
+ */
+export function moveLeft(player) {
+    player.x += player.speed * -1
+}
+
+/**
+ * @param { Player } player 
+ */
+export function moveRight(player) {
+    player.x += player.speed
 }
