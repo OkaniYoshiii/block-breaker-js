@@ -24,23 +24,50 @@ export const EDGES = {
 /**
  * @param { Circle } circle 
  * @param { Rect } rect 
- * @returns { boolean }
+ * @returns { number[] }
  */
 export function circleToRect(circle, rect) {
-    const circleDistance = {
-        x: Math.abs(circle.x - rect.x),
-        y: Math.abs(circle.y - rect.y),
+    const edges = []
+
+    if(!isCircleCollidingRect(circle, rect)) {
+        return [EDGES.NONE]
     }
 
-    if (circleDistance.x > (rect.width/2 + circle.radius)) { return false; }
-    if (circleDistance.y > (rect.height/2 + circle.radius)) { return false; }
+    // Le cercle touche le rectangle — identifier les côtés
+    if(circle.x - circle.radius <= rect.x) {
+        edges.push(EDGES.LEFT)
+    }
+    if(circle.x + circle.radius >= rect.x + rect.width) {
+        edges.push(EDGES.RIGHT)
+    }
+    if(circle.y - circle.radius <= rect.y) {
+        edges.push(EDGES.TOP)
+    }
+    if(circle.y + circle.radius >= rect.y + rect.height) {
+        edges.push(EDGES.BOTTOM)
+    }
 
-    if (circleDistance.x <= (rect.width/2)) { return true; } 
-    if (circleDistance.y <= (rect.height/2)) { return true; }
+    return edges
+}
 
-    const cornerDistanceSquared = (circleDistance.x - rect.width/2)^2 + (circleDistance.y - rect.height/2)^2;
+/**
+ * @param { Circle } circle 
+ * @param { Rect } rect 
+ * @returns { boolean }
+ */
+export function isCircleCollidingRect(circle, rect) {
+    const closestX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.width))
+    const closestY = Math.max(rect.y, Math.min(circle.y, rect.y + rect.height))
 
-    return (cornerDistanceSquared <= (circle.radius^2));
+    const dx = circle.x - closestX
+    const dy = circle.y - closestY
+    const distanceSq = dx * dx + dy * dy
+
+    if (distanceSq > circle.radius * circle.radius) {
+        return false
+    }
+
+    return true
 }
 
 

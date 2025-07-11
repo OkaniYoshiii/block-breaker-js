@@ -1,3 +1,4 @@
+import * as Collisions from "./collisions.js"
 import * as Player from "./entities/player.js"
 import * as Block from "./entities/block.js"
 import * as Ball from "./entities/ball.js"
@@ -82,16 +83,21 @@ export function init(canvas) {
         return player
     }()
 
+    const ball = function() {
+        const radius = 5
+        const gap = 2
+
+        return Ball.newBall(player.x + player.width / 2, player.y - radius - gap, radius)
+    }()
+
     const directionnalArrow = function() {
         const origin = {
-            x: player.x + player.width / 2,
-            y: player.y,
+            x: ball.x,
+            y: ball.y,
         }
 
         return DirectionnalArrow.newDirectionnalArrow(origin, 15, 5, player.height)
     }()
-
-    const ball = Ball.newBall(player.x + player.width / 2, player.y, 5)
 
     const objects = {
         blocks: blocks,
@@ -119,6 +125,8 @@ export function update(canvas) {
     if(controls.rightPressed) {
         Player.moveRight(game.objects.player)
     }
+
+    const edge = Collisions.circleToRect(game.objects.ball, game.objects.player)
 
     Ball.update(game.objects, canvas)
     Player.update(game.objects.player)
