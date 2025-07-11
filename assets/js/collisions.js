@@ -15,39 +15,49 @@
 
 export const EDGES = {
     NONE: 0,
-    LEFT: 1,
-    RIGHT: 2,
-    TOP: 3,
-    BOTTOM: 4,
+    LEFT: 1 << 1,
+    RIGHT: 1 << 2,
+    TOP: 1 << 3,
+    BOTTOM: 1 << 4,
+}
+
+export const CORNERS = {
+    TOPLEFT: EDGES.TOP + EDGES.LEFT,
+    TOPRIGHT: EDGES.TOP + EDGES.RIGHT,
+    BOTTOMRIGHT: EDGES.BOTTOM + EDGES.RIGHT,
+    BOTTOMLEFT: EDGES.BOTTOM + EDGES.LEFT,
 }
 
 /**
  * @param { Circle } circle 
  * @param { Rect } rect 
- * @returns { number[] }
+ * @returns { number }
  */
 export function circleToRect(circle, rect) {
-    const edges = []
+    let edge = EDGES.NONE
 
-    if(!isCircleCollidingRect(circle, rect)) {
-        return [EDGES.NONE]
+    if (!isCircleCollidingRect(circle, rect)) {
+        return EDGES.NONE
     }
 
     // Le cercle touche le rectangle — identifier les côtés
     if(circle.x - circle.radius <= rect.x) {
-        edges.push(EDGES.LEFT)
-    }
-    if(circle.x + circle.radius >= rect.x + rect.width) {
-        edges.push(EDGES.RIGHT)
-    }
-    if(circle.y - circle.radius <= rect.y) {
-        edges.push(EDGES.TOP)
-    }
-    if(circle.y + circle.radius >= rect.y + rect.height) {
-        edges.push(EDGES.BOTTOM)
+        edge |= EDGES.LEFT
     }
 
-    return edges
+    if(circle.x + circle.radius >= rect.x + rect.width) {
+        edge |= EDGES.RIGHT
+    }
+
+    if(circle.y - circle.radius <= rect.y) {
+        edge |= EDGES.TOP
+    }
+
+    if(circle.y + circle.radius >= rect.y + rect.height) {
+        edge |= EDGES.BOTTOM
+    }
+
+    return edge
 }
 
 /**

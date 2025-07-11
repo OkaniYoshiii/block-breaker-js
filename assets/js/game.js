@@ -72,7 +72,7 @@ export function init(canvas) {
     }()
 
     const player = function() {
-        const height = 10
+        const height = 100
         const width = 50
         const x = canvas.width / 2 - width / 2
         const y = canvas.height - height
@@ -125,8 +125,6 @@ export function update(canvas) {
     if(controls.rightPressed) {
         Player.moveRight(game.objects.player)
     }
-
-    const edge = Collisions.circleToRect(game.objects.ball, game.objects.player)
 
     Ball.update(game.objects, canvas)
     Player.update(game.objects.player)
@@ -241,4 +239,7 @@ export function onCanvasMouseMove(ev) {
     const angle = radToDeg(-Math.atan2(x, y))
 
     game.objects.directionnalArrow.angle = angle
+
+    game.objects.ball.x = ev.offsetX
+    game.objects.ball.y = ev.offsetY
 }

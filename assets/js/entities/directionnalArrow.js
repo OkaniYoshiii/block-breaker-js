@@ -11,9 +11,9 @@
  */
 
 export const STATE = {
-    NONE: 1 >> 0,
-    HIDDEN: 1 >> 1,
-    LOCKED: 1 >> 2,
+    NONE: 0,
+    HIDDEN: 1 << 0,
+    LOCKED: 1 << 1,
 }
 
 /**
