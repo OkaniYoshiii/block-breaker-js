@@ -83,7 +83,7 @@ export function init(canvas) {
   })();
 
   const player = (function () {
-    const height = 100;
+    const height = 10;
     const width = 50;
     const x = canvas.width / 2 - width / 2;
     const y = canvas.height - height;
@@ -133,11 +133,14 @@ export function update(canvas) {
     return;
   }
 
-  if (controls.leftPressed) {
+  if (controls.leftPressed && game.objects.player.x > 0) {
     Player.moveLeft(game.objects.player);
   }
 
-  if (controls.rightPressed) {
+  if (
+    controls.rightPressed &&
+    game.objects.player.x + game.objects.player.width < canvas.width
+  ) {
     Player.moveRight(game.objects.player);
   }
 

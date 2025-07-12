@@ -45,17 +45,11 @@ export function draw(ball, context) {
  * @param { HTMLCanvasElement } canvas
  */
 export function update(gameObjects, canvas) {
-  // Anticipate collision
-  gameObjects.ball.x += gameObjects.ball.dirX;
-  gameObjects.ball.y += gameObjects.ball.dirY;
-  const collisionEdge = Collisions.circleOutsideOfCanvas(
+  const collisionEdge = Collisions.anticipate(
+    Collisions.circleOutsideOfCanvas,
     gameObjects.ball,
     canvas,
   );
-
-  // Reset position
-  gameObjects.ball.x -= gameObjects.ball.dirX;
-  gameObjects.ball.y -= gameObjects.ball.dirY;
 
   switch (collisionEdge) {
     case Collisions.EDGES.LEFT:
@@ -71,7 +65,8 @@ export function update(gameObjects, canvas) {
   {
     const ball = gameObjects.ball;
     const player = gameObjects.player;
-    const edge = Collisions.circleToRect(ball, player);
+
+    const edge = Collisions.anticipate(Collisions.circleToRect, ball, player);
 
     // Edge collision
     switch (edge) {
