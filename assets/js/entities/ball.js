@@ -1,4 +1,4 @@
-import * as Collisions from "../collisions.js"
+import * as Collisions from "../collisions.js";
 
 /**
  * @typedef { Object } Ball
@@ -10,35 +10,34 @@ import * as Collisions from "../collisions.js"
  */
 
 /**
- * @param { number } x 
- * @param { number } y 
- * @param { number } radius 
+ * @param { number } x
+ * @param { number } y
+ * @param { number } radius
  * @returns { Ball }
  */
 export function newBall(x, y, radius) {
-    return {
-        x: x,
-        y: y,
-        radius: radius,
+  return {
+    x: x,
+    y: y,
+    radius: radius,
 
-        dirX: 0,
-        dirY: 0,
-    }
+    dirX: 0,
+    dirY: 0,
+  };
 }
 
-
 /**
- * @param { Ball } ball 
- * @param { CanvasRenderingContext2D } context 
+ * @param { Ball } ball
+ * @param { CanvasRenderingContext2D } context
  */
 export function draw(ball, context) {
-    const fillStyle = context.fillStyle
-    context.beginPath()
-    context.fillStyle = 'red'
-    context.ellipse(ball.x, ball.y, ball.radius, ball.radius, 0, 0, 360)
-    context.fill()
+  const fillStyle = context.fillStyle;
+  context.beginPath();
+  context.fillStyle = "red";
+  context.ellipse(ball.x, ball.y, ball.radius, ball.radius, 0, 0, 360);
+  context.fill();
 
-    context.fillStyle = fillStyle
+  context.fillStyle = fillStyle;
 }
 
 /**
@@ -46,90 +45,172 @@ export function draw(ball, context) {
  * @param { HTMLCanvasElement } canvas
  */
 export function update(gameObjects, canvas) {
-    // Anticipate collision
-    gameObjects.ball.x += gameObjects.ball.dirX
-    gameObjects.ball.y += gameObjects.ball.dirY
-    const collisionEdge = Collisions.circleOutsideOfCanvas(gameObjects.ball, canvas)
+  // Anticipate collision
+  gameObjects.ball.x += gameObjects.ball.dirX;
+  gameObjects.ball.y += gameObjects.ball.dirY;
+  const collisionEdge = Collisions.circleOutsideOfCanvas(
+    gameObjects.ball,
+    canvas,
+  );
 
-    // Reset position
-    gameObjects.ball.x -= gameObjects.ball.dirX
-    gameObjects.ball.y -= gameObjects.ball.dirY
+  // Reset position
+  gameObjects.ball.x -= gameObjects.ball.dirX;
+  gameObjects.ball.y -= gameObjects.ball.dirY;
 
-    switch(collisionEdge) {
-        case Collisions.EDGES.LEFT:
-        case Collisions.EDGES.RIGHT:
-            gameObjects.ball.dirX *= -1
-            break;
-        case Collisions.EDGES.TOP:
-        case Collisions.EDGES.BOTTOM:
-            gameObjects.ball.dirY *= -1
-            break;
-    }
+  switch (collisionEdge) {
+    case Collisions.EDGES.LEFT:
+    case Collisions.EDGES.RIGHT:
+      gameObjects.ball.dirX *= -1;
+      break;
+    case Collisions.EDGES.TOP:
+    case Collisions.EDGES.BOTTOM:
+      gameObjects.ball.dirY *= -1;
+      break;
+  }
 
-    {
-        const ball = gameObjects.ball
-        const player = gameObjects.player
-        const edge = Collisions.circleToRect(ball, player)
+  {
+    const ball = gameObjects.ball;
+    const player = gameObjects.player;
+    const edge = Collisions.circleToRect(ball, player);
 
-        // Edge collision
-        switch(edge) {
-            case Collisions.CORNERS.TOPLEFT:
-                // Direction: bottomLeft
-                if(ball.dirX < 0 && ball.dirY > 0) {
-                    ball.dirY *= -1
-                }
-
-                // Direction: topRight
-                if(ball.dirX > 0 && ball.dirY < 0) {
-                    ball.dirX *= -1
-                }
-
-                // Direction: bottomRight
-                if(ball.dirX > 0 && ball.dirY < 0) {
-                    const dx = player.x - ball.x
-                    const dy = player.y - ball.y
-
-                    if(dy < dx) {
-                        ball.dirX *= -1
-                    }
-
-                    if(dy > dx) {
-                        ball.dirY *= -1
-                    }
-
-                    if(dy === dx) {
-                        ball.dirX *= -1
-                        ball.dirY *= -1
-                    }
-                }
-                // Balle remonte
-
-                // Balle part à gauche
-
-                // Balle repart dans le sens inverse
-                console.log('Top left corner', ball.dirX, ball.dirY)
-                break;
-            case Collisions.CORNERS.TOPRIGHT:
-                console.log('Top right corner')
-                break;
-            case Collisions.CORNERS.BOTTOMRIGHT:
-                console.log('Bottom left corner')
-                break;
-            case Collisions.CORNERS.BOTTOMLEFT:
-                console.log('Bottom right corner')
-                break;
-            case Collisions.EDGES.TOP:
-                ball.dirY = Math.abs(ball.dirY) * (-1)
-                break;
-            case Collisions.EDGES.LEFT:
-                ball.dirX = Math.abs(ball.dirX) * (-1)
-                break;
-            case Collisions.EDGES.RIGHT:
-                ball.dirX = Math.abs(ball.dirX)
-                break;
+    // Edge collision
+    switch (edge) {
+      case Collisions.CORNERS.TOPLEFT:
+        // Direction: bottomLeft
+        if (ball.dirX < 0 && ball.dirY > 0) {
+          ball.dirY *= -1;
         }
-    }
 
-    gameObjects.ball.x += gameObjects.ball.dirX
-    gameObjects.ball.y += gameObjects.ball.dirY
-} 
+        // Direction: topRight
+        if (ball.dirX > 0 && ball.dirY < 0) {
+          ball.dirX *= -1;
+        }
+
+        // Direction: bottomRight
+        if (ball.dirX > 0 && ball.dirY < 0) {
+          const dx = Math.abs(player.x - ball.x);
+          const dy = Math.abs(player.y - ball.y);
+
+          if (dy < dx) {
+            ball.dirX *= -1;
+          }
+
+          if (dy > dx) {
+            ball.dirY *= -1;
+          }
+
+          if (dy === dx) {
+            ball.dirX *= -1;
+            ball.dirY *= -1;
+          }
+        }
+        console.log("Top left corner", ball.dirX, ball.dirY);
+        break;
+      case Collisions.CORNERS.TOPRIGHT:
+        // Direction: BottomRight
+        if (ball.dirX > 0 && ball.dirY > 0) {
+          ball.dirY *= -1;
+        }
+
+        // Direction: topLeft
+        if (ball.dirX < 0 && ball.dirY < 0) {
+          ball.dirX *= -1;
+        }
+
+        // Direction: bottomLeft
+        if (ball.dirX < 0 && ball.dirY < 0) {
+          const dx = Math.abs(player.x - ball.x);
+          const dy = Math.abs(player.y - ball.y);
+
+          if (dy < dx) {
+            ball.dirX *= -1;
+          }
+
+          if (dy > dx) {
+            ball.dirY *= -1;
+          }
+
+          if (dy === dx) {
+            ball.dirX *= -1;
+            ball.dirY *= -1;
+          }
+        }
+        console.log("Top right corner");
+        break;
+      case Collisions.CORNERS.BOTTOMRIGHT:
+        // Direction: TopRight
+        if (ball.dirX > 0 && ball.dirY < 0) {
+          ball.dirY *= -1;
+        }
+
+        // Direction: BottomLeft
+        if (ball.dirX < 0 && ball.dirY > 0) {
+          ball.dirX *= -1;
+        }
+
+        // Direction: TopLeft
+        if (ball.dirX < 0 && ball.dirY < 0) {
+          const dx = Math.abs(player.x - ball.x);
+          const dy = Math.abs(player.y - ball.y);
+
+          if (dy < dx) {
+            ball.dirX *= -1;
+          }
+
+          if (dy > dx) {
+            ball.dirY *= -1;
+          }
+
+          if (dy === dx) {
+            ball.dirX *= -1;
+            ball.dirY *= -1;
+          }
+        }
+        console.log("Bottom left corner");
+        break;
+      case Collisions.CORNERS.BOTTOMLEFT:
+        // Direction: TopLeft
+        if (ball.dirX < 0 && ball.dirY < 0) {
+          ball.dirY *= -1;
+        }
+
+        // Direction: BottomRight
+        if (ball.dirX > 0 && ball.dirY > 0) {
+          ball.dirX *= -1;
+        }
+
+        // Direction: TopRight
+        if (ball.dirX > 0 && ball.dirY < 0) {
+          const dx = Math.abs(player.x - ball.x);
+          const dy = Math.abs(player.y - ball.y);
+
+          if (dy < dx) {
+            ball.dirX *= -1;
+          }
+
+          if (dy > dx) {
+            ball.dirY *= -1;
+          }
+
+          if (dy === dx) {
+            ball.dirX *= -1;
+            ball.dirY *= -1;
+          }
+        }
+        console.log("Bottom right corner");
+        break;
+      case Collisions.EDGES.TOP:
+        ball.dirY = Math.abs(ball.dirY) * -1;
+        break;
+      case Collisions.EDGES.LEFT:
+        ball.dirX = Math.abs(ball.dirX) * -1;
+        break;
+      case Collisions.EDGES.RIGHT:
+        ball.dirX = Math.abs(ball.dirX);
+        break;
+    }
+  }
+
+  gameObjects.ball.x += gameObjects.ball.dirX;
+  gameObjects.ball.y += gameObjects.ball.dirY;
+}

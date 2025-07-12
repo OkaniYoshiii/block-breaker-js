@@ -1,10 +1,14 @@
-import * as Collisions from "./collisions.js"
-import * as Player from "./entities/player.js"
-import * as Block from "./entities/block.js"
-import * as Ball from "./entities/ball.js"
-import * as DirectionnalArrow from "./entities/directionnalArrow.js"
-import { isHTMLCanvasElement, isKeyboardEvent, isMouseEvent } from "./type_guards.js"
-import { radToDeg } from "./math.js"
+import * as Collisions from "./collisions.js";
+import * as Player from "./entities/player.js";
+import * as Block from "./entities/block.js";
+import * as Ball from "./entities/ball.js";
+import * as DirectionnalArrow from "./entities/directionnalArrow.js";
+import {
+  isHTMLCanvasElement,
+  isKeyboardEvent,
+  isMouseEvent,
+} from "./type_guards.js";
+import { radToDeg } from "./math.js";
 
 /** @typedef { import('./entities/block.js').Block } Block */
 /** @typedef { import("./entities/player.js").Player } Player */
@@ -32,214 +36,226 @@ import { radToDeg } from "./math.js"
  */
 
 const controls = {
-    leftPressed: false,
-    rightPressed: false,
-}
+  leftPressed: false,
+  rightPressed: false,
+};
 
 /** @type { UninitializedGame | InitializedGame } */
 const game = {
-    isInitialized: false,
-    objects: {},
-}
+  isInitialized: false,
+  objects: {},
+};
 
 /**
  * @param { HTMLCanvasElement } canvas
  */
 export function init(canvas) {
-    const aspectRatio = 9 / 16
+  const aspectRatio = 9 / 16;
 
-    canvas.width = 500
-    canvas.height = canvas.width * aspectRatio
+  canvas.width = 500;
+  canvas.height = canvas.width * aspectRatio;
 
-    const blocks = function() {
-        const blocksPerRow = 10
-        const blocksPerColumn = 5
-        const gap = 5
-        const width = canvas.width / blocksPerRow - ((blocksPerRow - 1) * gap / blocksPerRow)
-        const height = 100 / blocksPerColumn - ((blocksPerColumn - 1) * gap / blocksPerColumn)
+  const blocks = (function () {
+    const blocksPerRow = 10;
+    const blocksPerColumn = 5;
+    const gap = 5;
+    const width =
+      canvas.width / blocksPerRow - ((blocksPerRow - 1) * gap) / blocksPerRow;
+    const height =
+      100 / blocksPerColumn - ((blocksPerColumn - 1) * gap) / blocksPerColumn;
 
-        /** @type { Block[] } */
-        const blocks = []
-        for(let i = 0; i < blocksPerRow; i++) {
-            for(let j = 0; j < blocksPerColumn; j++) {
-                const block = Block.newBlock(i * width + gap * i, j * height + gap * j, width, height)
+    /** @type { Block[] } */
+    const blocks = [];
+    for (let i = 0; i < blocksPerRow; i++) {
+      for (let j = 0; j < blocksPerColumn; j++) {
+        const block = Block.newBlock(
+          i * width + gap * i,
+          j * height + gap * j,
+          width,
+          height,
+        );
 
-                blocks.push(block)
-            }
-        }
-
-        return blocks
-    }()
-
-    const player = function() {
-        const height = 100
-        const width = 50
-        const x = canvas.width / 2 - width / 2
-        const y = canvas.height - height
-
-        const player = Player.newPlayer(x, y, 50, height, 10)
-        player.isLocked = true
-
-        return player
-    }()
-
-    const ball = function() {
-        const radius = 5
-        const gap = 2
-
-        return Ball.newBall(player.x + player.width / 2, player.y - radius - gap, radius)
-    }()
-
-    const directionnalArrow = function() {
-        const origin = {
-            x: ball.x,
-            y: ball.y,
-        }
-
-        return DirectionnalArrow.newDirectionnalArrow(origin, 15, 5, player.height)
-    }()
-
-    const objects = {
-        blocks: blocks,
-        player: player,
-        directionnalArrow: directionnalArrow,
-        ball: ball,
+        blocks.push(block);
+      }
     }
 
-    game.isInitialized = true
-    game.objects = objects
+    return blocks;
+  })();
+
+  const player = (function () {
+    const height = 100;
+    const width = 50;
+    const x = canvas.width / 2 - width / 2;
+    const y = canvas.height - height;
+
+    const player = Player.newPlayer(x, y, 50, height, 10);
+    player.isLocked = true;
+
+    return player;
+  })();
+
+  const ball = (function () {
+    const radius = 5;
+    const gap = 2;
+
+    return Ball.newBall(
+      player.x + player.width / 2,
+      player.y - radius - gap,
+      radius,
+    );
+  })();
+
+  const directionnalArrow = (function () {
+    const origin = {
+      x: ball.x,
+      y: ball.y,
+    };
+
+    return DirectionnalArrow.newDirectionnalArrow(origin, 15, 5, player.height);
+  })();
+
+  const objects = {
+    blocks: blocks,
+    player: player,
+    directionnalArrow: directionnalArrow,
+    ball: ball,
+  };
+
+  game.isInitialized = true;
+  game.objects = objects;
 }
 
 /**
  * @param { HTMLCanvasElement } canvas
  */
 export function update(canvas) {
-    if(!game.isInitialized) {
-        return
-    }
+  if (!game.isInitialized) {
+    return;
+  }
 
-    if(controls.leftPressed) {
-        Player.moveLeft(game.objects.player)
-    }
+  if (controls.leftPressed) {
+    Player.moveLeft(game.objects.player);
+  }
 
-    if(controls.rightPressed) {
-        Player.moveRight(game.objects.player)
-    }
+  if (controls.rightPressed) {
+    Player.moveRight(game.objects.player);
+  }
 
-    Ball.update(game.objects, canvas)
-    Player.update(game.objects.player)
+  Ball.update(game.objects, canvas);
+  Player.update(game.objects.player);
 }
 
 /**
- * @param { HTMLCanvasElement } canvas 
+ * @param { HTMLCanvasElement } canvas
  * @param { CanvasRenderingContext2D } context
  */
 export function render(canvas, context) {
-    if(!game.isInitialized) {
-        return
-    }
+  if (!game.isInitialized) {
+    return;
+  }
 
-    context.clearRect(0, 0, canvas.width, canvas.height)
+  context.clearRect(0, 0, canvas.width, canvas.height);
 
-    for(const block of game.objects.blocks) {
-        Block.draw(block, context)
-    }
+  for (const block of game.objects.blocks) {
+    Block.draw(block, context);
+  }
 
-    Player.draw(game.objects.player, context)
+  Player.draw(game.objects.player, context);
 
-    DirectionnalArrow.draw(game.objects.directionnalArrow, context)
+  DirectionnalArrow.draw(game.objects.directionnalArrow, context);
 
-    Ball.draw(game.objects.ball, context)
+  Ball.draw(game.objects.ball, context);
 }
 
 /**
- * @param { Event } ev 
+ * @param { Event } ev
  */
 export function onKeyDown(ev) {
-    if(!isKeyboardEvent(ev)) {
-        return
-    }
+  if (!isKeyboardEvent(ev)) {
+    return;
+  }
 
-    const key = ev.key
+  const key = ev.key;
 
-    switch(key) {
-        case 'ArrowLeft':
-            controls.leftPressed = true
-            break;
-        case 'ArrowRight':
-            controls.rightPressed = true
-            break;
-    }
+  switch (key) {
+    case "ArrowLeft":
+      controls.leftPressed = true;
+      break;
+    case "ArrowRight":
+      controls.rightPressed = true;
+      break;
+  }
 }
 
 /**
- * @param { Event } ev 
+ * @param { Event } ev
  */
 export function onKeyUp(ev) {
-    if(!isKeyboardEvent(ev)) {
-        return
-    }
-    const key = ev.key
+  if (!isKeyboardEvent(ev)) {
+    return;
+  }
+  const key = ev.key;
 
-    switch(key) {
-        case 'ArrowLeft':
-            controls.leftPressed = false
-            break;
-        case 'ArrowRight':
-            controls.rightPressed = false
-            break;
-    }
+  switch (key) {
+    case "ArrowLeft":
+      controls.leftPressed = false;
+      break;
+    case "ArrowRight":
+      controls.rightPressed = false;
+      break;
+  }
 }
 
 /**
- * @param { Event } ev 
+ * @param { Event } ev
  */
 export function onCanvasClick(ev) {
-    const currentTarget = ev.currentTarget 
-    if(!isMouseEvent(ev) || !isHTMLCanvasElement(currentTarget) || !game.isInitialized) {
-        return
-    }
+  const currentTarget = ev.currentTarget;
+  if (
+    !isMouseEvent(ev) ||
+    !isHTMLCanvasElement(currentTarget) ||
+    !game.isInitialized
+  ) {
+    return;
+  }
 
-    const maxSpeed = 5
+  const maxSpeed = 5;
 
-    const dx = ev.offsetX - game.objects.ball.x
-    const dy = ev.offsetY - game.objects.ball.y
+  const dx = ev.offsetX - game.objects.ball.x;
+  const dy = ev.offsetY - game.objects.ball.y;
 
-    const angle = Math.atan2(dy, dx)
+  const angle = Math.atan2(dy, dx);
 
-    const angleDeg = angle * (180 / Math.PI) + 90
-    if (angleDeg < -90 || angleDeg > 90) {
-        return
-    }
+  const angleDeg = angle * (180 / Math.PI) + 90;
+  if (angleDeg < -90 || angleDeg > 90) {
+    return;
+  }
 
-    const length = Math.sqrt(dx * dx + dy * dy)
-    const normX = dx / length
-    const normY = dy / length
+  const length = Math.sqrt(dx * dx + dy * dy);
+  const normX = dx / length;
+  const normY = dy / length;
 
-    game.objects.ball.dirX = normX * maxSpeed
-    game.objects.ball.dirY = normY * maxSpeed
+  game.objects.ball.dirX = normX * maxSpeed;
+  game.objects.ball.dirY = normY * maxSpeed;
 
-    game.objects.player.isLocked = false
-    game.objects.directionnalArrow.state = DirectionnalArrow.STATE.HIDDEN
+  game.objects.player.isLocked = false;
+  game.objects.directionnalArrow.state = DirectionnalArrow.STATE.HIDDEN;
 
-    currentTarget.removeEventListener('click', onCanvasClick)
+  currentTarget.removeEventListener("click", onCanvasClick);
 }
 
 /**
- * @param { Event } ev 
+ * @param { Event } ev
  */
 export function onCanvasMouseMove(ev) {
-    if(!isMouseEvent(ev) || !game.isInitialized) {
-        return
-    }
+  if (!isMouseEvent(ev) || !game.isInitialized) {
+    return;
+  }
 
-    const directionnalArrow = game.objects.directionnalArrow
-    const x = directionnalArrow.origin.x - ev.offsetX
-    const y = directionnalArrow.origin.y - ev.offsetY
-    const angle = radToDeg(-Math.atan2(x, y))
+  const directionnalArrow = game.objects.directionnalArrow;
+  const x = directionnalArrow.origin.x - ev.offsetX;
+  const y = directionnalArrow.origin.y - ev.offsetY;
+  const angle = radToDeg(-Math.atan2(x, y));
 
-    game.objects.directionnalArrow.angle = angle
-
-    game.objects.ball.x = ev.offsetX
-    game.objects.ball.y = ev.offsetY
+  game.objects.directionnalArrow.angle = angle;
 }
