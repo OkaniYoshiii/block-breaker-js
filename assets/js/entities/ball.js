@@ -1,4 +1,5 @@
 import * as Collisions from "../collisions.js";
+import * as Game from "../game.js";
 
 /**
  * @typedef { Object } Ball
@@ -41,10 +42,11 @@ export function draw(ball, context) {
 }
 
 /**
- * @param { import("../game.js").GameObjects } gameObjects
+ * @param { import("../game.js").InitializedGame } game
  * @param { HTMLCanvasElement } canvas
  */
-export function update(gameObjects, canvas) {
+export function update(game, canvas) {
+  const gameObjects = game.objects;
   const collisionEdge = Collisions.anticipate(
     Collisions.circleOutsideOfCanvas,
     gameObjects.ball,
@@ -57,9 +59,10 @@ export function update(gameObjects, canvas) {
       gameObjects.ball.dirX *= -1;
       break;
     case Collisions.EDGES.TOP:
-    case Collisions.EDGES.BOTTOM:
       gameObjects.ball.dirY *= -1;
       break;
+    case Collisions.EDGES.BOTTOM:
+      Game.reset();
   }
 
   {

@@ -144,7 +144,7 @@ export function update(canvas) {
     Player.moveRight(game.objects.player);
   }
 
-  Ball.update(game.objects, canvas);
+  Ball.update(game, canvas);
   Player.update(game.objects.player);
 }
 
@@ -261,4 +261,9 @@ export function onCanvasMouseMove(ev) {
   const angle = radToDeg(-Math.atan2(x, y));
 
   game.objects.directionnalArrow.angle = angle;
+}
+
+export function reset() {
+  game.isInitialized = false;
+  game.objects = {};
 }
